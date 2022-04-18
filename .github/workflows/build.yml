@@ -10,46 +10,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     environment: preview
-    strategy:
-      matrix:
-        node-version: [16.x]
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 16.x
           cache: 'npm'
       - run: npm ci
       - run: npm run build --if-present
       - run: npm test
       - run: cp package*.json ./dist/
-      - name: Update environment info
-        run: |
-          cat <<EOD>./dist/.env
-            PORT=${PORT}
-            ENVIRONMENT="${ENVIRONMENT}"
-            BUILD_INFO="${BUILD_INFO}"
-          EOD
-        env:
-          PORT: ${{ secrets.PORT }}
-          ENVIRONMENT:  ${{ secrets.ENVIRONMENT }}
-          BUILD_INFO: "Build ${{ github.run_number }}.${{ github.run_attempt }} from ${{ github.ref_name }}"
-      - name: Configure SSH
-        run: |
-          mkdir -p ~/.ssh/
-          echo "$SSH_KEY" > ~/.ssh/staging.key
-          chmod 600 ~/.ssh/staging.key
-          cat >>~/.ssh/config <<END
-          Host staging
-            HostName $SSH_HOST
-            User $SSH_USER
-            IdentityFile ~/.ssh/staging.key
-            StrictHostKeyChecking no
-          END
-        env:
-          SSH_USER: ${{ secrets.STAGING_SSH_USER }}
-          SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
-          SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
-      - name: Deploy code
-        run: rsync -az dist staging:loadouts/preview/${{ github.run_number }}
+      - run: node --version > ./dist/.nvmrc
+      - uses: ./.github/workflows/deploy
+        with:
+          port: ${{ secrets.PORT }}
+          environment: preview
+        secrets:
+          ssh-host: ${{ secrets.STAGING_SSH_HOST }}
+          ssh-key: ${{ secrets.STAGING_SSH_KEY }}
+          ssh-user: ${{ secrets.STAGING_SSH_USER }}
