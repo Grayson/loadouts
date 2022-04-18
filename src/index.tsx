@@ -1,15 +1,25 @@
 import express from 'express'
+import dotenv from 'dotenv'
 import { renderToString } from 'react-dom/server'
 import DisplayPostRequest from './functions/display-post-request'
 
 const server = express()
 server.use(express.json())
 
-const port = 8080
+const dotenvResult = dotenv.config()
+if (!!dotenvResult.error) {
+	throw dotenvResult.error
+}
+
+const port = process.env.PORT || 8080
+const environment = process.env.ENVIRONMENT || 'dev'
+const buildInfo = process.env.BUILD_INFO || `Started ${Date.now().toLocaleString()}`
 
 server.get('/info', (_, response) => {
 	response.json({
-		port
+		buildInfo,
+		environment,
+		port,
 	})
 })
 
