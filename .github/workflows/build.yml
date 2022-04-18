@@ -24,7 +24,7 @@ jobs:
       - run: node --version > ./dist/.nvmrc
   deploy:
     needs: build
-    uses: ./.github/workflows/deploy
+    uses: ./.github/workflows/deploy.yml
     with:
       port: ${{ secrets.PORT }}
       environment: preview
