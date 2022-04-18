@@ -32,9 +32,9 @@ jobs:
             BUILD_INFO="${BUILD_INFO}"
           EOD
         env:
-          PORT: ${{ env.PORT }}
-          ENVIRONMENT:  ${{ env.ENVIRONMENT }}
-          BUILD_INFO: "Build ${{ github.build_number }}. ${{ github.run_attempt }} from ${{ github.ref_name }}"
+          PORT: ${{ secrets.PORT }}
+          ENVIRONMENT:  ${{ secrets.ENVIRONMENT }}
+          BUILD_INFO: "Build ${{ github.run_number }}.${{ github.run_attempt }} from ${{ github.ref_name }}"
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh/
@@ -52,4 +52,4 @@ jobs:
           SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
           SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
       - name: Deploy code
-        run: rsync -az dist staging:loadouts/preview/${{ github.build_number }}
+        run: rsync -az dist staging:loadouts/preview/${{ github.run_number }}
