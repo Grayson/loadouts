@@ -52,4 +52,4 @@ jobs:
           SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
           SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
       - name: Deploy code
-        run: rsync -az dist:${{ secrets.STAGING_SSH_HOST }}:loadouts/preview/${{ github.build_number }}
+        run: rsync -az dist staging:loadouts/preview/${{ github.build_number }}
