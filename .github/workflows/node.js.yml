@@ -22,3 +22,14 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       - run: npm test
+      - name: Update environment info
+        run: |
+          cat <<EOD>./dist/.env
+            PORT=${PORT}
+            ENVIRONMENT="${ENVIRONMENT}"
+            BUILD_INFO="${BUILD_INFO}"
+          EOD
+        env:
+          PORT: ${{ env.PORT }}
+          ENVIRONMENT:  ${{ env.ENVIRONMENT }}
+          BUILD_INFO: "Build ${{ github.build_number }}. ${{ github.run_attempt }} from ${{ github.ref_name }}"
