@@ -1,0 +1,24 @@
+name: Trunk
+
+on:
+  push:
+    branches: [ trunk ]
+  pull_request:
+    branches: [ trunk ]
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    with:
+      environment: preview
+      node_version: 16.x
+      port: 8100
+  deploy:
+    needs: build
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: preview
+    secrets:
+      ssh-host: ${{ secrets.STAGING_SSH_HOST }}
+      ssh-key: ${{ secrets.STAGING_SSH_KEY }}
+      ssh-user: ${{ secrets.STAGING_SSH_USER }}
