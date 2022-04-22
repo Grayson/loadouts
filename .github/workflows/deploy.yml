@@ -1,19 +1,12 @@
 on:
   workflow_call:
-    inputs:
-      port:
-        required: true
-        type: number
-      environment:
-        required: true
-        type: string
     secrets:
       ssh-host:
         required: true
       ssh-key:
         required: true
       ssh-user:
-        required: true      
+        required: true  
 
 jobs:
   deploy:
@@ -23,17 +16,6 @@ jobs:
         with:
           name: dist
           path: ./dist
-      - name: Update environment info
-        run: |
-          cat <<EOD>./dist/.env
-            PORT=${PORT}
-            ENVIRONMENT="${ENVIRONMENT}"
-            BUILD_INFO="${BUILD_INFO}"
-          EOD
-        env:
-          PORT: ${{ inputs.port }}
-          ENVIRONMENT:  ${{ inputs.environment }}
-          BUILD_INFO: "Build ${{ github.run_number }}.${{ github.run_attempt }} from ${{ github.ref_name }}"
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh/
