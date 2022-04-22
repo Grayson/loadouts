@@ -6,18 +6,21 @@ on:
   pull_request:
     branches: [ trunk ]
 
+env:
+  environment: preview
+
 jobs:
   build:
     uses: ./.github/workflows/build.yml
     with:
-      environment: preview
+      environment: ${{ env.environment }}
       node_version: 16.x
       port: 8100
   deploy:
     needs: build
     uses: ./.github/workflows/deploy.yml
     with:
-      environment: preview
+      environment: ${{ env.environment }}
     secrets:
       ssh-host: ${{ secrets.STAGING_SSH_HOST }}
       ssh-key: ${{ secrets.STAGING_SSH_KEY }}
